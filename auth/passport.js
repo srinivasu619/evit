@@ -1,4 +1,4 @@
-//Authentication module which defines 
+//Authentication module which defines
 //authentication techniques
 //passport module authentication api just like devise
 const passport = require('passport');

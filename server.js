@@ -2,17 +2,19 @@ const express = require("express");
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const expressSession = require('express-session');
-
+const passport = require('./auth/passport');
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser('my super secret'));
+app.use(cookieParser('keep it secret'));
 app.use(expressSession({
-	secret: 'my super secret',
+	secret: 'keep it secret',
 	resave: false,
-	saveUnitialized: false
-}))
+	saveUnintialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/api', require('./routes/api'));
 app.use('/', require('./routes/index'));
