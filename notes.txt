@@ -1,0 +1,42 @@
+adding hostid 
+
+chunky and chatty api
+
+add include key in get events request
+attribute key for main model
+
+add a put request in events.js to create an edit function
+
+two credentials
+event id in params
+and req.user.id == hostId
+
+event.update(all field are updated) using .update command of sequelize
+event.update- return how many rows or columns have been affected
+
+create user.js
+    handle routes relating the user's information
+
+
+add a delete request in event.js to delete an event
+    credentials:
+        id - params id
+        hostId = req.user.id
+
+map - takes argument as a function.
+add invitees to body and check it in the post request for the new event
+
+evntual consistency(evnetually client know about the operation) and
+immediate consistency(evnetually client know about the operation)
+
+require EventInvitee in the events.js
+
+use BulkCreate
+    array of objects will be send
+
+route to get particular events invitees in events.js
+
+
+
+
+
