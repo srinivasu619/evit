@@ -3,7 +3,9 @@
 //passport module authentication api just like devise
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
+const BearerStrategy = require('passport-http-bearer').Strategy;
 const User = require('../db/models').User;
+const AuthToken = require('../db/models').AuthToken;
 
 passport.serializeUser(function(user,done){
 	console.log('serializing User:' + user.id);
@@ -39,6 +41,23 @@ passport.use(new LocalStrategy(
 			done(err);
 		})
 	}
-))
+));
+
+passport.use(new BearerStrategy(function(token,done){
+	AuthToken.findOne({
+		where:{
+			token:token
+		},
+		include: [User]
+	}).then(function(token){
+		if(!token){
+			return done(null,false,{message:"INVALID TOKEN"});
+		}
+		return done(null,token);
+	})
+	.catch(function(err){
+		done(err)
+	});
+}));
 
 module.exports = passport;

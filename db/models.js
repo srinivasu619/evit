@@ -64,6 +64,22 @@ const EventInvitee = db. define('eventinvitee',{
 });
 //CREATED EVENT INVITEE MODEL
 
+//AUTH TOKEN MODEL
+const AuthToken = db.define('token',{
+	id:{
+		type:Sequelize.INTEGER,
+		primaryKey:true,
+		autoIncrement: true
+	},
+	token:{
+		type:Sequelize.STRING,
+		unique:true,
+		index:true
+	}
+});
+
+//CREATED AUTH TOKEN MODEL
+
 //MAKING ASSOCIATIONS
 Event.belongsTo(User,{
 	foreignKey: 'hostId',
@@ -71,8 +87,10 @@ Event.belongsTo(User,{
 });
 User.hasMany(Event,{
 	foreignKey: 'hostId'
-})
+});
 
+AuthToken.belongsTo(User);
+User.hasMany(AuthToken);
 EventInvitee.belongsTo(Event);
 Event.hasMany(EventInvitee);
 EventInvitee.belongsTo(Invitee);
@@ -83,5 +101,5 @@ db.sync({force: false}).then(function(){
 
 
 module.exports ={
-	Event,User,Invitee,EventInvitee
+	Event,User,Invitee,EventInvitee,AuthToken
 };
