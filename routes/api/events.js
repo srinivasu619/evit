@@ -1,8 +1,9 @@
 const router = require("express").Router;
 
 const route = router();
-const Event = require('../../db/models').Event;
-
+const Event = require('../../db/models').Event
+const Invitee = require('../../db/models').Invitee;
+const EventInvitee = require('../../db/models').EventInvitee;
 route.get('/',function(req,res){
 	//res.send("GETTING YOU ALL THE EVENTS");
 	Event.findAll({
@@ -50,8 +51,33 @@ route.post('/new',function(req,res){
 		message:req.body.message,
 		hostId:req.user.id
 	}).then(function(event){
-		//if(req.body.inv)
-		res.send(event);
+		if(req.body.invitees)
+		{
+			let invitees = req.body.invitees.split(';');
+			invitees =invitees.map(function(item){
+				return {email: item.trim()};
+			});
+			Invitee.bulkCreate(invitees,{
+				ignoreDuplicates: true
+			})
+			.then(function(invitees){
+				let eventInvitees = invitees.map(function(item){
+					return {
+						eventId: event.id,
+						inviteeId: item.id 
+					}
+				});
+				EventInvitee.bulkCreate(eventInvitees,{
+					ignoreDuplicates: true
+				}).then(function(){
+					res.send(event)
+				})
+			})
+		}
+		else
+		{
+			res.send(event);
+		}
 	}).catch(function(err){
 		//console.log('err');
 		res.send('There was an error');
@@ -85,6 +111,28 @@ route.put('/:id',function(req,res){
                 res.status(200).send('Event successfully edited')
             }
         })
+});
+
+route.get('/:id/invitees',function(req,res){
+	// console.log('\n\n\n\n\n\n\n\n'+req.params.id);
+	// console.log('\n\n\n\n\n\n\n\n'+req.user.id);
+	 EventInvitee.findAll({
+        where: {
+            eventId: req.params.id,
+        	'$event.hostId$': req.user.id
+        },
+        include: [{
+            model: Invitee,
+            as: 'invitee',
+            attributes: ['id', 'email']
+        }, {
+            model: Event,
+            as: 'event',
+            attributes: ['id', 'hostId']
+        }]
+    }).then(function(info){
+		res.send(info);
+	})
 });
 
 module.exports = route;
